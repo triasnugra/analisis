@@ -1,0 +1,34 @@
+import pandas as pd
+import numpy as np
+
+# Mengatur seed untuk hasil yang dapat direproduksi
+np.random.seed(42)
+
+# Menghasilkan data untuk 20 responden dan 12 item
+n_respondents = 20
+n_items = 12
+
+# Menghasilkan nilai acak yang saling terkait untuk setiap item
+# Pertama, buat nilai acak untuk item 1
+item_1 = np.random.randint(3, 6, size=n_respondents)
+
+# Kemudian, menghasilkan item lainnya dengan menambahkan noise kecil
+data = {
+    'Item 1': item_1,
+    'Item 2': item_1 + np.random.randint(0, 2, size=n_respondents),
+    'Item 3': item_1 + np.random.randint(0, 2, size=n_respondents),
+    'Item 4': item_1 + np.random.randint(-1, 2, size=n_respondents),
+    'Item 5': item_1 + np.random.randint(-1, 2, size=n_respondents),
+    'Item 6': item_1 + np.random.randint(0, 2, size=n_respondents),
+    'Item 7': item_1 + np.random.randint(-1, 2, size=n_respondents),
+    'Item 8': item_1 + np.random.randint(0, 2, size=n_respondents),
+    'Item 9': item_1 + np.random.randint(-1, 2, size=n_respondents),
+    'Item 10': item_1 + np.random.randint(0, 2, size=n_respondents),
+    'Item 11': item_1 + np.random.randint(0, 2, size=n_respondents),
+    'Item 12': item_1 + np.random.randint(-1, 2, size=n_respondents)
+}
+
+df = pd.DataFrame(data)
+
+# Menampilkan data yang dihasilkan
+print(df)
