@@ -1,0 +1,14 @@
+from scipy.stats import pearsonr
+
+# Menghitung total skor untuk setiap responden
+df['Total'] = df.sum(axis=1)
+
+# Menghitung korelasi Pearson antara setiap item dan total skor
+validitas = {}
+for column in df.columns[:-1]:  # exclude 'Total' column
+    corr, _ = pearsonr(df[column], df['Total'])
+    validitas[column] = corr
+
+# Menampilkan hasil validitas (korelasi Pearson)
+print("Validitas (Korelasi Pearson):")
+print(validitas)
