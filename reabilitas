@@ -1,0 +1,12 @@
+# Fungsi untuk menghitung Cronbach's Alpha
+def cronbach_alpha(df_items):
+    item_scores = df_items.values
+    item_variances = item_scores.var(axis=0, ddof=1)
+    total_variance = item_scores.sum(axis=1).var(ddof=1)
+    n_items = df_items.shape[1]
+    cronbach_alpha_value = (n_items / (n_items - 1)) * (1 - (item_variances.sum() / total_variance))
+    return cronbach_alpha_value
+
+# Menghitung Cronbach's Alpha untuk semua item
+cronbach_alpha_value = cronbach_alpha(df.iloc[:, :-1])  # exclude 'Total' column
+print(f"Cronbach's Alpha: {cronbach_alpha_value:.2f}")
