@@ -1,0 +1,65 @@
+!pip install PyMuPDF
+
+___________
+
+import fitz  # PyMuPDF
+import re
+from google.colab import files
+
+# Fungsi untuk mengidentifikasi level heading berdasarkan gaya font dan format teks
+def get_heading_level(text, font_flags):
+    # Deteksi bold uppercase
+    if text.isupper() and (font_flags & 2):  # Bold uppercase
+        return 1  # Judul utama
+    # Deteksi bold lowercase
+    elif text.islower() and (font_flags & 2):  # Bold lowercase
+        return 2  # Subjudul
+    # Deteksi bold sentence case
+    elif text.istitle() and (font_flags & 2):  # Bold dengan capital setiap kata
+        return 3  # Sub-subjudul
+    # Deteksi bold sentence case (hanya huruf awal kalimat yang besar)
+    elif text[0].isupper() and text[1:].islower() and (font_flags & 2):  # Bold sentence case
+        return 3  # Sub-subjudul
+    # Deteksi uppercase (tanpa bold)
+    elif text.isupper() and not (font_flags & 2):  # Uppercase saja tanpa bold
+        return 2  # Bisa dianggap subjudul
+    else:
+        return None  # Tidak termasuk heading
+
+# Fungsi untuk mengekstrak hanya judul, subjudul, dan sub-subjudul dari PDF
+def extract_headings(pdf_path):
+    headings = []
+    doc = fitz.open(pdf_path)
+    
+    for page_num in range(doc.page_count):
+        page = doc[page_num]
+        blocks = page.get_text("dict")["blocks"]
+        
+        for block in blocks:
+            if "lines" in block:  # Pastikan blok berisi teks
+                for line in block["lines"]:
+                    for span in line["spans"]:
+                        text = span["text"].strip()
+                        font_flags = span["flags"]
+
+                        # Tentukan apakah teks memenuhi kriteria heading
+                        if text and not re.match(r'^\s*$', text):  # Pastikan teks tidak kosong
+                            level = get_heading_level(text, font_flags)  # Tentukan level heading
+                            if level:  # Hanya tambahkan jika teks diidentifikasi sebagai heading
+                                headings.append((level, text))
+    
+    return headings
+
+# Fungsi untuk menampilkan hasil heading sesuai hierarki
+def display_headings(headings):
+    for level, text in headings:
+        indent = ' ' * (level - 1) * 4  # Menambahkan indentasi sesuai level
+        print(f"{indent}- {text}")
+
+# Unggah file PDF
+uploaded = files.upload()
+pdf_path = next(iter(uploaded))  # Mendapatkan nama file yang diunggah
+
+# Ekstraksi dan tampilkan heading
+headings = extract_headings(pdf_path)
+display_headings(headings)
